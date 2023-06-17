@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>House Price Prediction</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #F7F7F7;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Increased margin */
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            color: #333333;
+            margin-bottom: 10px; /* Added space below headings */
+        }
+
+        .form-group input[type="number"] {
+            width: 95%; /* Reduced input field width */
+            padding: 8px;
+            border: 1px solid #CCCCCC;
+            border-radius: 4px;
+        }
+
+        .form-group input[type="submit"] {
+            background-color: #4CAF50;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .results {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        /* Additional Styling */
+        body {
+            background-color: #EFEFEF;
+        }
+
+        .container {
+            background-color: #F8F8F8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>House Price Prediction</h1>
+        <form action="{{ url_for('predict_datapoint')}}" method="post">
+            <div class="form-group">
+                <label for="MS_SubClass">MS_SubClass</label>
+                <input type="number" id="MS_SubClass" name="MS_SubClass" step="any"
+                    placeholder="Enter MS_SubClass" required />
+            </div>
+            <div class="form-group">
+            <label for="MS_Zoning">MS_Zoning</label>
+            <select id="MS_Zoning" name="MS_Zoning" required>
+                    <option value="RL">RL</option>
+                    <option value="RH">RH</option>
+                    <option value="FV">FV</option>
+                    <option value="RM">RM</option>
+                    <option value="C (all)">C (all)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Lot_Frontage">Lot_Frontage</label>
+                <input type="number" id="Lot_Frontage" name="Lot_Frontage" step="any"
+                    placeholder="Enter Lot_Frontage" required />
+            </div>
+            <div class="form-group">
+                <label for="Lot_Area">Lot_Area</label>
+                <input type="number" id="Lot_Area" name="Lot_Area" step="any"
+                    placeholder="Enter Lot_Area" required />
+            </div>
+            <div class="form-group">
+                <label for="Street">Street</label>
+                <select id="Street" name="Street" required>
+                    <option value="Pave">Pave</option>
+                    <option value="Grvl">Grvl</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Lot_Shape">Lot_Shape</label>
+                <select id="Lot_Shape" name="Lot_Shape" required>
+                    <option value="IR1">IR1</option>
+                    <option value="Reg">Reg</option>
+                    <option value="IR2">IR2</option>
+                    <option value="IR3">IR3</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Land_Contour">Land_Contour</label>
+                <select id="Land_Contour" name="Land_Contour" required>
+                    <option value="Lvl">Lvl</option>
+                    <option value="HLS">HLS</option>
+                    <option value="Bnk">Bnk</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Utilities">Utilities</label>
+                <select id="Utilities" name="Utilities" required>
+                    <option value="AllPub">AllPub</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Lot_Config">Lot_Config</label>
+                <select id="Lot_Config" name="Lot_Config" required>
+                    <option value="Corner">Corner</option>
+                    <option value="Inside">Inside</option>
+                    <option value="CulDSac">CulDSac</option>
+                    <option value="FR2">FR2</option>
+                    <option value="FR3">FR3</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Land_Slope">Land_Slope</label>
+                <select id="Land_Slope" name="Land_Slope" required>
+                    <option value="Gtl">Gtl</option>
+                    <option value="Mod">Mod</option>
+                    <option value="Sev">Sev</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Neighborhood">Neighborhood</label>
+                <select id="Neighborhood" name="Neighborhood" required> '
+                    <option value="NAmes">NAmes</option>
+                    <option value="Gilbert">Gilbert</option>
+                    <option value="StoneBr">StoneBr</option>
+                    <option value="NWAmes">NWAmes</option>
+                    <option value="Somerst">Somerst</option>
+                    <option value="BrDale">BrDale</option>
+                    <option value="NPkVill">NPkVill</option>
+                    <option value="NridgHt">NridgHt</option>
+                    <option value="Blmngtn">Blmngtn</option>
+                    <option value="NoRidge">NoRidge</option>
+                    <option value="SawyerW">SawyerW</option>
+                    <option value="Sawyer">Sawyer</option>
+                    <option value="BrkSide">BrkSide</option>
+                    <option value="OldTown">OldTown</option>
+                    <option value="IDOTRR">IDOTRR</option>
+                    <option value="ClearCr">ClearCr</option>
+                    <option value="SWISU">SWISU</option>
+                    <option value="Edwards">Edwards</option>
+                    <option value="CollgCr">CollgCr</option>
+                    <option value="Crawfor">Crawfor</option>
+                    <option value="Blueste">Blueste</option>
+                    <option value="Mitchel">Mitchel</option>
+                    <option value="Timber">Timber</option>
+                    <option value="MeadowV">MeadowV</option>
+                    <option value="Veenker">Veenker</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Conition_One">Conition_One</label>
+                <select id="Conition_One" name="Conition_One" required>
+                    <option value="Norm">Norm</option>
+                    <option value="Feedr">Feedr</option>
+                    <option value="PosN">PosN</option>
+                    <option value="RRNe">RRNe</option>
+                    <option value="RRAe">RRAe</option>
+                    <option value="Artery">Artery</option>
+                    <option value="PosA">PosA</option>
+                    <option value="RRAn">RRAn</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Condition_Two">Condition_Two</label>
+                <select id="Condition_Two" name="Condition_Two" required>
+                    <option value="Norm">Norm</option>
+                    <option value="Feedr">Feedr</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Bldg_Type">Bldg_Type</label>
+                <select id="Bldg_Type" name="Bldg_Type" required>
+                    <option value="1Fam">1Fam</option>
+                    <option value="TwnhsE">TwnhsE</option>
+                    <option value="Twnhs">Twnhs</option>
+                    <option value="Duplex">Duplex</option>
+                    <option value="2fmCon">2fmCon</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="House_Style">House_Style</label>
+                <select id="House_Style" name="House_Style" required>
+                    <option value="1Story">1Story</option>
+                    <option value="2Story">2Story</option>
+                    <option value="1.5Fin">1.5Fin</option>
+                    <option value="SFoyer">SFoyer</option>
+                    <option value="SLvl">SLvl</option>
+                    <option value="2.5Unf">2.5Unf</option>
+                    <option value="1.5Unf">1.5Unf</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Overall_Qual">Overall_Qual</label>
+                <input type="number" id="Overall_Qual" name="Overall_Qual" step="any"
+                    placeholder="Enter Overall_Qual" required />
+            </div>
+            <div class="form-group">
+                <label for="Overall_Cond">Overall_Cond</label>
+                <input type="number" id="Overall_Cond" name="Overall_Cond" step="any"
+                    placeholder="Enter Overall_Cond" required />
+            </div>
+            <div class="form-group">
+                <label for="Year_Built">Year_Built</label>
+                <input type="number" id="Year_Built" name="Year_Built" step="any"
+                    placeholder="Enter Year_Built" required />
+            </div>
+            <div class="form-group">
+                <label for="Year_Remod">Year_Remod</label>
+                <input type="number" id="Year_Remod" name="Year_Remod" step="any"
+                    placeholder="Enter Year_Remod" required />
+            </div>
+            <div class="form-group">
+                <label for="Roof_Style">Roof_Style</label>
+                <select id="Roof_Style" name="Roof_Style" required>
+                    <option value="Hip">Hip</option>
+                    <option value="Gable">Gable</option>
+                    <option value="Mansard">Mansard</option>
+                    <option value="Gambrel">Gambrel</option>
+                    <option value="Flat">Flat</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Roof_Matl">Roof_Matl</label>
+                <select id="Roof_Matl" name="Roof_Matl" required>
+                    <option value="CompShg">CompShg</option>
+                    <option value="Tar&amp;Grv">Tar&amp;Grv</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Exterior_First">Exterior_First</label>
+                <select id="Exterior_First" name="Exterior_First" required>
+                    <option value="BrkFace">BrkFace</option>
+                    <option value="VinylSd">VinylSd</option>
+                    <option value="Wd Sdng">Wd Sdng</option>
+                    <option value="CemntBd">CemntBd</option>
+                    <option value="HdBoard">HdBoard</option>
+                    <option value="Plywood">Plywood</option>
+                    <option value="MetalSd">MetalSd</option>
+                    <option value="AsbShng">AsbShng</option>
+                    <option value="WdShing">WdShing</option>
+                    <option value="Stucco">Stucco</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Exterior_Second">Exterior_Second</label>
+                <select id="Exterior_Second" name="Exterior_Second" required>
+                    <option value="Plywood">Plywood</option>
+                    <option value="Wd Sdng">Wd Sdng</option>
+                    <option value="MetalSd">MetalSd</option>
+                    <option value="VinylSd">VinylSd</option>
+                    <option value="CmentBd">CmentBd</option>
+                    <option value="HdBoard">HdBoard</option>
+                    <option value="Wd Shng">Wd Shng</option>
+                    <option value="AsbShng">AsbShng</option>
+                    <option value="Stucco">Stucco</option>
+                    <option value="BrkFace">BrkFace</option>
+                    <option value="ImStucc">ImStucc</option>
+                    <option value="Stone">Stone</option>
+                    <option value="Brk Cmn">Brk Cmn</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Mas_Vnr_Type">Mas_Vnr_Type</label>
+                <select id="Mas_Vnr_Type" name="Mas_Vnr_Type" required>
+                    <option value="BrkFace">BrkFace</option>
+                    <option value="Stone">Stone</option>
+                    <option value="BrkCmn">BrkCmn</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Mas_Vnr_Area">Mas_Vnr_Area</label>
+                <input type="number" id="Mas_Vnr_Area" name="Mas_Vnr_Area" step="any"
+                    placeholder="Enter Mas_Vnr_Area" required />
+            </div>
+            <div class="form-group">
+                <label for="Exter_Qual">Exter_Qual</label>
+                <select id="Exter_Qual" name="Exter_Qual" required>
+                    <option value="TA">TA</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Ex">Ex</option>
+                    <option value="Fa">Fa</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Exter_Cond">Exter_Cond</label>
+                <select id="Exter_Cond" name="Exter_Cond" required>
+                    <option value="TA">TA</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Ex">Ex</option>
+                    <option value="Po">Po</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Foundation">Foundation</label>
+                <select id="Foundation" name="Foundation" required>
+                    <option value="PConc">PConc</option>
+                    <option value="CBlock">CBlock</option>
+                    <option value="BrkTil">BrkTil</option>
+                    <option value="Slab">Slab</option>
+                    <option value="Stone">Stone</option>
+                    <option value="Wood">Wood</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Bsmt_Qual">Bsmt_Qual</label>
+                <select id="Bsmt_Qual" name="Bsmt_Qual" required>
+                    <option value="TA">TA</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Ex">Ex</option>
+                    <option value="Po">Po</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Bsmt_Cond">Bsmt_Cond</label>
+                <select id="Bsmt_Cond" name="Bsmt_Cond" required>
+                    <option value="TA">TA</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Po">Po</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Ex">Ex</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Bsmt_Exposure">Bsmt_Exposure</label>
+                <select id="Bsmt_Exposure" name="Bsmt_Exposure" required>
+                    <option value="No">No</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Mn">Mn</option>
+                    <option value="Av">Av</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="BsmtFin_Type_One">BsmtFin_Type_One</label>
+                <select id="BsmtFin_Type_One" name="BsmtFin_Type_One" required>
+                    <option value="GLQ">GLQ</option>
+                    <option value="Rec">Rec</option>
+                    <option value="Unf">Unf</option>
+                    <option value="ALQ">ALQ</option>
+                    <option value="LwQ">LwQ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="BsmtFin_SF_One">BsmtFin_SF_One</label>
+                <input type="number" id="BsmtFin_SF_One" name="BsmtFin_SF_One" step="any"
+                    placeholder="Enter BsmtFin_SF_One" required />
+            </div>
+            <div class="form-group">
+                <label for="BsmtFin_Type_Two">BsmtFin_Type_Two</label>
+                <select id="BsmtFin_Type_Two" name="BsmtFin_Type_Two" required>
+                    <option value="Unf">Unf</option>
+                    <option value="BLQ">BLQ</option>
+                    <option value="Rec">Rec</option>
+                    <option value="LwQ">LwQ</option>
+                    <option value="GLQ">GLQ</option>
+                    <option value="ALQ">ALQ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="BsmtFin_SF_Two">BsmtFin_SF_Two</label>
+                <input type="number" id="BsmtFin_SF_Two" name="BsmtFin_SF_Two" step="any"
+                    placeholder="Enter BsmtFin_SF_Two" required />
+            </div>
+            <div class="form-group">
+                <label for="Bsmt_Unf_SF">Bsmt_Unf_SF</label>
+                <input type="number" id="Bsmt_Unf_SF" name="Bsmt_Unf_SF" step="any"
+                    placeholder="Enter Bsmt_Unf_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Total_Bsmt_SF">Total_Bsmt_SF</label>
+                <input type="number" id="Total_Bsmt_SF" name="Total_Bsmt_SF" step="any"
+                    placeholder="Enter Total_Bsmt_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Heating">Heating</label>
+                <select id="Heating" name="Heating" required>
+                    <option value="GasA">GasA</option>
+                    <option value="GasW">GasW</option>
+                    <option value="Grav">Grav</option>
+                    <option value="Wall">Wall</option>
+                    <option value="OthW">OthW</option>
+                    <option value="Floor">Floor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Heating_QC">Heating_QC</label>
+                <select id="Heating_QC" name="Heating_QC" required>
+                    <option value="Ex">Ex</option>
+                    <option value="Gd">Gd</option>
+                    <option value="TA">TA</option>
+                    <option value="Fa">Fa</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Central_Air">Central_Air</label>
+                <select id="Central_Air" name="Central_Air" required>
+                    <option value="Y">Y</option>
+                    <option value="N">N</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Electrical">Electrical</label>
+                <select id="Electrical" name="Electrical" required>
+                    <option value="SBrkr">SBrkr</option>
+                    <option value="FuseF">FuseF</option>
+                    <option value="FuseA">FuseA</option>
+                    <option value="FuseP">FuseP</option>
+                    <option value="Mix">Mix</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="First_Flr_SF">First_Flr_SF</label>
+                <input type="number" id="First_Flr_SF" name="First_Flr_SF" step="any"
+                    placeholder="Enter First_Flr_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Second_Flr_SF">Second_Flr_SF</label>
+                <input type="number" id="Second_Flr_SF" name="Second_Flr_SF" step="any"
+                    placeholder="Enter Second_Flr_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Low_Qual_Fin_SF">Low_Qual_Fin_SF</label>
+                <input type="number" id="Low_Qual_Fin_SF" name="Low_Qual_Fin_SF" step="any"
+                    placeholder="Enter Low_Qual_Fin_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Gr_Liv_Area">Gr_Liv_Area</label>
+                <input type="number" id="Gr_Liv_Area" name="Gr_Liv_Area" step="any"
+                    placeholder="Enter Gr_Liv_Area" required />
+            </div>
+            <div class="form-group">
+                <label for="Bsmt_Full_Bath">Bsmt_Full_Bath</label>
+                <input type="number" id="Bsmt_Full_Bath" name="Bsmt_Full_Bath" step="any"
+                    placeholder="Enter Bsmt_Full_Bath" required />
+            </div>
+            <div class="form-group">
+                <label for="Bsmt_Half_Bath">Bsmt_Half_Bath</label>
+                <input type="number" id="Bsmt_Half_Bath" name="Bsmt_Half_Bath" step="any"
+                    placeholder="Enter Bsmt_Half_Bath" required />
+            </div>
+            <div class="form-group">
+                <label for="Full_Bath">Full_Bath</label>
+                <input type="number" id="Full_Bath" name="Full_Bath" step="any"
+                    placeholder="Enter Full_Bath" required />
+            </div>
+            <div class="form-group">
+                <label for="Half_Bath">Half_Bath</label>
+                <input type="number" id="Half_Bath" name="Half_Bath" step="any"
+                    placeholder="Enter Half_Bath" required />
+            </div>
+            <div class="form-group">
+                <label for="Bedroom_AbvGr">Bedroom_AbvGr</label>
+                <input type="number" id="Bedroom_AbvGr" name="Bedroom_AbvGr" step="any"
+                    placeholder="Enter Bedroom_AbvGr" required />
+            </div>
+            <div class="form-group">
+                <label for="Kitchen_AbvGr">Kitchen_AbvGr</label>
+                <input type="number" id="Kitchen_AbvGr" name="Kitchen_AbvGr" step="any"
+                    placeholder="Enter Kitchen_AbvGr" required />
+            </div>
+            <div class="form-group">
+                <label for="Kitchen_Qual">Kitchen_Qual</label>
+                <select id="Kitchen_Qual" name="Kitchen_Qual" required>
+                    <option value="Gd">Gd</option>
+                    <option value="TA">TA</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Ex">Ex</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="TotRms_AbvGrd">TotRms_AbvGrd</label>
+                <input type="number" id="TotRms_AbvGrd" name="TotRms_AbvGrd" step="any"
+                    placeholder="Enter TotRms_AbvGrd" required />
+            </div>
+            <div class="form-group">
+                <label for="Functional">Functional</label>
+                <select id="Functional" name="Functional" required>
+                    <option value="Typ">Typ</option>
+                    <option value="Min1">Min1</option>
+                    <option value="Maj1">Maj1</option>
+                    <option value="Min2">Min2</option>
+                    <option value="Mod">Mod</option>
+                    <option value="Maj2">Maj2</option>
+                    <option value="Sev">Sev</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Fireplaces">Fireplaces</label>
+                <input type="number" id="Fireplaces" name="Fireplaces" step="any"
+                    placeholder="Enter Fireplaces" required />
+            </div>
+            <div class="form-group">
+                <label for="Fireplace_Qu">Fireplace_Qu</label>
+                <select id="Fireplace_Qu" name="Fireplace_Qu" required>
+                    <option value="TA">TA</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Ex">Ex</option>
+                    <option value="Po">Po</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Garage_Type">Garage_Type</label>
+                <select id="Garage_Type" name="Garage_Type" required>
+                    <option value="Attchd">Attchd</option>
+                    <option value="Detchd">Detchd</option>
+                    <option value="BuiltIn">BuiltIn</option>
+                    <option value="Basment">Basment</option>
+                    <option value="CarPort">CarPort</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Garage_Yr_Blt">Garage_Yr_Blt</label>
+                <input type="number" id="Garage_Yr_Blt" name="Garage_Yr_Blt" step="any"
+                    placeholder="Enter Garage_Yr_Blt" required />
+            </div>
+            <div class="form-group">
+                <label for="Garage_Finish">Garage_Finish</label>
+                <select id="Garage_Finish" name="Garage_Finish" required>
+                    <option value="RFn">RFn</option>
+                    <option value="Unf">Unf</option>
+                    <option value="Fin">Fin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Garage_Cars">Garage_Cars</label>
+                <input type="number" id="Garage_Cars" name="Garage_Cars" step="any"
+                    placeholder="Enter Garage_Cars" required />
+            </div>
+            <div class="form-group">
+                <label for="Garage_Area">Garage_Area</label>
+                <input type="number" id="Garage_Area" name="Garage_Area" step="any"
+                    placeholder="Enter Garage_Area" required />
+            </div>
+            <div class="form-group">
+                <label for="Garage_Qual">Garage_Qual</label>
+                <select id="Garage_Qual" name="Garage_Qual" required>
+                    <option value="TA">TA</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Ex">Ex</option>
+                    <option value="Po">Po</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Garage_Cond">Garage_Cond</label>
+                <select id="Garage_Cond" name="Garage_Cond" required>
+                    <option value="TA">TA</option>
+                    <option value="Fa">Fa</option>
+                    <option value="Po">Po</option>
+                    <option value="Gd">Gd</option>
+                    <option value="Ex">Ex</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Paved_Drive">Paved_Drive</label>
+                <select id="Paved_Drive" name="Paved_Drive" required>
+                    <option value="Y">Y</option>
+                    <option value="N">N</option>
+                    <option value="P">P</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Wood_Deck_SF">Wood_Deck_SF</label>
+                <input type="number" id="Wood_Deck_SF" name="Wood_Deck_SF" step="any"
+                    placeholder="Enter Wood_Deck_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Open_Porch_SF">Open_Porch_SF</label>
+                <input type="number" id="Open_Porch_SF" name="Open_Porch_SF" step="any"
+                    placeholder="Enter Open_Porch_SF" required />
+            </div>
+            <div class="form-group">
+                <label for="Enclosed_Porch">Enclosed_Porch</label>
+                <input type="number" id="Enclosed_Porch" name="Enclosed_Porch" step="any"
+                    placeholder="Enter Enclosed_Porch" required />
+            </div>
+            <div class="form-group">
+                <label for="Ssn_Porch">Ssn_Porch</label>
+                <input type="number" id="Ssn_Porch" name="Ssn_Porch" step="any"
+                    placeholder="Enter the Ssn_Porch" required />
+            </div>
+            <div class="form-group">
+                <label for="Screen_Porch">Screen_Porch</label>
+                <input type="number" id="Screen_Porch" name="Screen_Porch" step="any"
+                    placeholder="Enter Screen_Porch" required />
+            </div>
+            <div class="form-group">
+                <label for="Pool_Area">Pool_Area</label>
+                <input type="number" id="Pool_Area" name="Pool_Area" step="any"
+                    placeholder="Enter Pool_Area" required />
+            </div>
+            <div class="form-group">
+                <label for="Misc_Val">Misc_Val</label>
+                <input type="number" id="Misc_Val" name="Misc_Val" step="any"
+                    placeholder="Enter Misc_Val" required />
+            </div>
+            <div class="form-group">
+                <label for="Mo_Sold">Mo_Sold</label>
+                <input type="number" id="Mo_Sold" name="Mo_Sold" step="any"
+                    placeholder="Enter Mo_Sold" required />
+            </div>
+            <div class="form-group">
+                <label for="Yr_Sold">Yr_Sold</label>
+                <input type="number" id="Yr_Sold" name="Yr_Sold" step="any"
+                    placeholder="Enter Yr_Sold" required />
+            </div>
+            <div class="form-group">
+                <label for="Sale_Type">Sale_Type</label>
+                <select id="Sale_Type" name="Sale_Type" required>
+                    <option value="WD ">WD </option>
+                    <option value="New">New</option>
+                    <option value="COD">COD</option>
+                    <option value="ConLD">ConLD</option>
+                    <option value="CWD">CWD</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Sale_Condition">Sale_Condition</label>
+                <select id="Sale_Condition" name="Sale_Condition" required>
+                    <option value="Normal">Normal</option>
+                    <option value="Partial">Partial</option>
+                    <option value="Abnorml">Abnorml</option>
+                    <option value="Family">Family</option>
+                    <option value="Alloca">Alloca</option>
+                    <option value="AdjLand">AdjLand</option>
+                </select>
+            <div class="form-group">
+                <input type="submit" value="Calculate" required />
+            </div>
+        </form>
+        <div class="results">
+            <p>Price: {{ results }}</p>
+        </div>
+    </div>
+</body>
+</html>
