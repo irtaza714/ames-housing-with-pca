@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import RobustScaler, OneHotEncoder, StandardScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler, OneHotEncoder
 from sklearn.decomposition import PCA
 from src.exception import CustomException
 from src.logger import logging
@@ -38,7 +38,7 @@ class DataTransformation:
             
             no_outliers_num = ['Year_Remod', 'Half_Bath', 'Mo_Sold', 'Yr_Sold']
 
-            cat = ['MS_Zoning', 'Street', 'Lot_Shape', 'Land_Contour', 'Utilities',
+            cat = ['MS_Zoning', 'Street', 'Lot_Shape', 'Land_Contour',
                    'Lot_Config', 'Land_Slope', 'Neighborhood', 'Conition_One',
                    'Condition_Two', 'Bldg_Type', 'House_Style', 'Roof_Style', 'Roof_Matl',
                    'Exterior_First', 'Exterior_Second', 'Mas_Vnr_Type', 'Exter_Qual',
@@ -58,7 +58,8 @@ class DataTransformation:
 
             cat_pipeline = Pipeline( steps=
                                   [ ('imputer', SimpleImputer(missing_values = np.nan, strategy='most_frequent')),
-                                   ("ohe",OneHotEncoder())])
+                                   ('ohe', OneHotEncoder())
+                                   ])
             
             preprocessor = ColumnTransformer(
                 [
@@ -89,6 +90,15 @@ class DataTransformation:
 
             logging.info("Dropped target column from the train set to make the input data frame for model training")
 
+            constant_columns_x_train_transf = x_train_transf.columns[x_train_transf.nunique() == 1]
+
+            if len(constant_columns_x_train_transf) > 0:
+                 print("Constant columns found in x_train_transf:", constant_columns_x_train_transf)
+            else:
+                print("No constant columns found in x_train_transf.")
+
+            logging.info("Checked for constant columns in x_train_transf")
+
             y_train_transf = train['SalePrice']
 
             logging.info("Target feature obtained for model training")
@@ -96,7 +106,16 @@ class DataTransformation:
             x_test_transf = test.drop('SalePrice', axis=1)
 
             logging.info("Dropped target column from the test set to make the input data frame for model testing")
-            
+
+            constant_columns_x_test_transf = x_test_transf.columns[x_test_transf.nunique() == 1]
+
+            if len(constant_columns_x_test_transf) > 0:
+                 print("Constant columns found in x_test_transf:", constant_columns_x_test_transf)
+            else:
+                print("No constant columns found in x_test_transf.")
+
+            logging.info("Checked for constant columns in x_test_transf")      
+        
             y_test_transf = test['SalePrice']
 
             logging.info("Target feature obtained for model testing")
@@ -105,15 +124,13 @@ class DataTransformation:
             
             logging.info("Preprocessing object obtained")
 
-            # Fit the preprocessor on the training data
-
             x_train_transf_preprocessed = preprocessor.fit_transform(x_train_transf)
 
             logging.info("Preprocessor applied on x_train_transf")
 
             x_train_transf_preprocessed_df = pd.DataFrame(x_train_transf_preprocessed)
 
-            logging.info("x_train_transf dataframe formed for pca")
+            logging.info("x_train_transf dataframe formed for backwards elimination")
 
             for i in range(len(x_train_transf_preprocessed_df.columns)):
                 
@@ -121,21 +138,35 @@ class DataTransformation:
 
             logging.info("x_train_transf dataframe columns renamed")
 
+            print ("x_train_transf_preprocessed_df shape before be:", x_train_transf_preprocessed_df.shape)
+
+            # print ("x_train_transf_preprocessed_df columns before be:", x_train_transf_preprocessed_df.columns)
+
+            constant_columns_x_train_transf_preprocessed_df = x_train_transf_preprocessed_df.columns[x_train_transf_preprocessed_df.nunique() == 1]
+
+            if len(constant_columns_x_train_transf_preprocessed_df) > 0:
+                 print("Constant columns found in x_train_transf_preprocessed_df:", constant_columns_x_train_transf_preprocessed_df)
+            else:
+                print("No constant columns found in x_train_transf_preprocessed_df.")
+
             pca = PCA().fit (x_train_transf_preprocessed_df)
 
             logging.info("PCA initiated on x_train_transf")
 
-            print ("np cumsum variance ratio:", np.cumsum(pca.explained_variance_ratio_))
+            # print ("np cumsum variance ratio:", np.cumsum(pca.explained_variance_ratio_))
 
             logging.info("np cumsum variance ratio obtained and printed")
 
-            pca = PCA (n_components=4)
+            desired_components = 7
+            
+            pca = PCA (n_components=desired_components)
 
             logging.info("principal components defined")
 
             principal_components_x_train = pca.fit_transform (x_train_transf_preprocessed_df)
 
-            x_train_transf_preprocessed_df_pca = pd.DataFrame (data = principal_components_x_train, columns = ['PC1', 'PC2', 'PC3', 'PC4'])
+            x_train_transf_preprocessed_df_pca = pd.DataFrame (data = principal_components_x_train, columns = ['PC1', 'PC2', 'PC3', 'PC4',
+                                                                                                               'PC5', 'PC6', 'PC7'])
 
             logging.info("x_train_transf_preprocessed_df_pca == data frame made from principal components")
 
@@ -145,19 +176,38 @@ class DataTransformation:
 
             x_test_transf_preprocessed_df = pd.DataFrame(x_test_transf_preprocessed)
 
-            logging.info("x_test_transf dataframe formed for pca")
+            logging.info("x_test_transf dataframe formed for backwards elimination")
 
             for i in range(len(x_test_transf_preprocessed_df.columns)):
                 
                 x_test_transf_preprocessed_df = x_test_transf_preprocessed_df.rename(columns={x_test_transf_preprocessed_df.columns[i]: f'c{i+1}'})
 
             logging.info("x_test_transf dataframe columns renamed")
+
+            constant_columns_x_test_transf_preprocessed_df = x_test_transf_preprocessed_df.columns[x_test_transf_preprocessed_df.nunique() == 1]
+
+            if len(constant_columns_x_test_transf_preprocessed_df) > 0:
+                 print("Constant columns found in x_test_transf_preprocessed_df:", constant_columns_x_test_transf_preprocessed_df)
+            else:
+                print("No constant columns found in x_test_transf_preprocessed_df.")
             
             principal_components_x_test = pca.transform (x_test_transf_preprocessed_df)
             
-            x_test_transf_preprocessed_df_pca  = pd.DataFrame (data = principal_components_x_test, columns = ['PC1', 'PC2', 'PC3', 'PC4'])
+            x_test_transf_preprocessed_df_pca  = pd.DataFrame (data = principal_components_x_test, columns = ['PC1', 'PC2', 'PC3',
+                                                                                                              'PC4', 'PC5', 'PC6', 'PC7'])
 
             logging.info("PCA appliedon x_test_transf dataframe")
+
+            with open('artifacts/pca.pkl', 'wb') as file:
+                pickle.dump(pca, file)
+            
+            logging.info("Saved pca object.")
+
+            # pca_components = pca.n_components_
+            # with open('artifacts/pca_components.pkl', 'wb') as file:
+            #     pickle.dump(pca_components, file)
+
+            # logging.info("Saved pca components.")
 
             train_arr = np.c_[np.array(x_train_transf_preprocessed_df_pca), np.array(y_train_transf)]
             
@@ -172,17 +222,6 @@ class DataTransformation:
             obj=preprocessor)
             
             logging.info("Saved preprocessing object.")
-
-            with open('artifacts/pca.pkl', 'wb') as file:
-                pickle.dump(pca, file)
-            
-            logging.info("Saved pca object.")
-
-            pca_components = pca.n_components_
-            with open('artifacts/pca_components.pkl', 'wb') as file:
-                pickle.dump(pca_components, file)
-
-            logging.info("Saved pca components.")
             
             return (
             train_arr,

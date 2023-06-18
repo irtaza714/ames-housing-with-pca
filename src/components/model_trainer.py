@@ -130,7 +130,7 @@ class ModelTrainer:
             
             print ('Root Mean Squared Error Test:', RMSE_test)
             
-            return score_train, score_test, MAE_train, MAE_test, MSE_train, MSE_test, RMSE_train, RMSE_test
+            return score_train, score_test, MAE_train, MAE_test, MSE_train, MSE_test, RMSE_train, RMSE_test, best_model
             
         except Exception as e:
             raise CustomException(e,sys)

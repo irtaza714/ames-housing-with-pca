@@ -11,21 +11,35 @@ class PredictPipeline:
     def predict(self, features):
         try:
             model_path = "artifacts/model.pkl"
+
             preprocessor_path = "artifacts/preprocessor.pkl"
+
             pca_path = "artifacts/pca.pkl"
-            pca_components = "artifacts/pca_components.pkl"
+
+            # pca_components_path = "artifacts/pca_components.pkl"
+
             model = load_object(file_path=model_path)
+
             preprocessor = load_object(file_path=preprocessor_path)
+
             pca = load_object(file_path=pca_path)
+
+            # pca_components = load_object(file_path=pca_components_path)
+
             data_scaled = preprocessor.transform(features)
+
             data_scaled_df = pd.DataFrame(data_scaled)
+            
             for i in range(len(data_scaled_df.columns)):  
                 data_scaled_df = data_scaled_df.rename(columns={data_scaled_df.columns[i]: f'c{i+1}'})
-            
-            pca.n_components = pca_components
-            data_scaled_df_pca = pca.transform (data_scaled_df)
 
-            preds = model.predict(data_scaled_df_pca)
+            principal_components_data_scaled_df = pca.transform (data_scaled_df)
+
+            data_scaled_df_pca  = pd.DataFrame (data = principal_components_data_scaled_df, columns = ['PC1', 'PC2', 'PC3',
+                                                                                                              'PC4', 'PC5', 'PC6', 'PC7'])
+            
+            data_scaled_df_np = np.array(data_scaled_df_pca)
+            preds = model.predict(data_scaled_df_np)
             return preds
 
         except Exception as e:
@@ -34,7 +48,7 @@ class PredictPipeline:
 
 class CustomData:
     def __init__(self, MS_SubClass: int, MS_Zoning: str, Lot_Frontage: float, Lot_Area: int,
-       Street: str, Lot_Shape: str, Land_Contour: str, Utilities: str,
+       Street: str, Lot_Shape: str, Land_Contour: str,
        Lot_Config: str, Land_Slope: str, Neighborhood: str, Conition_One: str,
        Condition_Two: str, Bldg_Type: str, House_Style: str, Overall_Qual: int,
        Overall_Cond: int, Year_Built: int, Year_Remod: int, Roof_Style: str, Roof_Matl: str,
@@ -59,7 +73,6 @@ class CustomData:
         self.Street = Street
         self.Lot_Shape = Lot_Shape
         self.Land_Contour = Land_Contour
-        self.Utilities = Utilities
         self.Lot_Config = Lot_Config
         self.Land_Slope = Land_Slope
         self.Neighborhood = Neighborhood
@@ -139,7 +152,6 @@ class CustomData:
                 "Street" : [self.Street],
                 "Lot_Shape" : [self.Lot_Shape], 
                 "Land_Contour" : [self.Land_Contour],
-                "Utilities" : [self.Utilities],
                 "Lot_Config" : [self.Lot_Config],
                 "Land_Slope" : [self.Land_Slope],
                 "Neighborhood" : [self.Neighborhood],

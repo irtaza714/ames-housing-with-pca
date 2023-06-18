@@ -129,7 +129,8 @@ env.bak/
 venv.bak/
 .apenv
 apenv/
-
+.artifacts
+artifacts/
 # Spyder project settings
 .spyderproject
 .spyproject

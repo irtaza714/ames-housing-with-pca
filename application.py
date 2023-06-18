@@ -23,7 +23,6 @@ def predict_datapoint():
     Street=request.form.get('Street'),
     Lot_Shape=request.form.get('Lot_Shape'),
     Land_Contour=request.form.get('Land_Contour'),
-    Utilities=request.form.get('Utilities'),
     Lot_Config=request.form.get('Lot_Config'),
     Land_Slope=request.form.get('Land_Slope'),
     Neighborhood=request.form.get('Neighborhood'),
